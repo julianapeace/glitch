@@ -97,22 +97,22 @@ class PostEffect {
       uniforms: this.uniforms,
       vertexShader: `attribute vec3 position;
           attribute vec2 uv;
-          
+
           varying vec2 vUv;
-          
+
           void main() {
             vUv = uv;
             gl_Position = vec4(position, 1.0);
           }
         `,
       fragmentShader: `precision highp float;
-        
+
           uniform float time;
           uniform vec2 resolution;
           uniform sampler2D texture;
-          
+
           varying vec2 vUv;
-          
+
           float random(vec2 c){
             return fract(sin(dot(c.xy ,vec2(12.9898,78.233))) * 43758.5453);
           }
@@ -219,16 +219,16 @@ class PostEffect {
             return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
                                           dot(p2,x2), dot(p3,x3) ) );
             }
-                    
+
           const float interval = 3.0;
-          
+
           void main(void){
             float strength = smoothstep(interval * 0.5, interval, interval - mod(time, interval));
             vec2 shake = vec2(strength * 8.0 + 0.5) * vec2(
               random(vec2(time)) * 2.0 - 1.0,
               random(vec2(time * 2.0)) * 2.0 - 1.0
             ) / resolution;
-          
+
             float y = vUv.y * resolution.y;
             float rgbWave = (
                 snoise3(vec3(0.0, y * 0.01, time * 400.0)) * (2.0 + strength * 32.0)
@@ -241,9 +241,9 @@ class PostEffect {
             float r = texture2D(texture, vec2(rgbUvX + rgbDiff, vUv.y) + shake).r;
             float g = texture2D(texture, vec2(rgbUvX, vUv.y) + shake).g;
             float b = texture2D(texture, vec2(rgbUvX - rgbDiff, vUv.y) + shake).b;
-          
+
             float whiteNoise = (random(vUv + mod(time, 10.0)) * 2.0 - 1.0) * (0.15 + strength * 0.15);
-          
+
             float bnTime = floor(time * 20.0) * 200.0;
             float noiseX = step((snoise3(vec3(0.0, vUv.x * 3.0, bnTime)) + 1.0) / 2.0, 0.12 + strength * 0.3);
             float noiseY = step((snoise3(vec3(0.0, vUv.y * 3.0, bnTime)) + 1.0) / 2.0, 0.12 + strength * 0.3);
@@ -253,7 +253,7 @@ class PostEffect {
             float bnG = texture2D(texture, vec2(bnUvX, vUv.y)).g * bnMask;
             float bnB = texture2D(texture, vec2(bnUvX - rgbDiff, vUv.y)).b * bnMask;
             vec4 blockNoise = vec4(bnR, bnG, bnB, 1.0);
-          
+
             float bnTime2 = floor(time * 25.0) * 300.0;
             float noiseX2 = step((snoise3(vec3(0.0, vUv.x * 2.0, bnTime2)) + 1.0) / 2.0, 0.12 + strength * 0.5);
             float noiseY2 = step((snoise3(vec3(0.0, vUv.y * 8.0, bnTime2)) + 1.0) / 2.0, 0.12 + strength * 0.3);
@@ -262,9 +262,9 @@ class PostEffect {
             float bnG2 = texture2D(texture, vec2(bnUvX, vUv.y)).g * bnMask2;
             float bnB2 = texture2D(texture, vec2(bnUvX - rgbDiff, vUv.y)).b * bnMask2;
             vec4 blockNoise2 = vec4(bnR2, bnG2, bnB2, 1.0);
-          
+
             float waveNoise = (sin(vUv.y * 1200.0) + 1.0) / 2.0 * (0.15 + strength * 0.2);
-          
+
             gl_FragColor = vec4(r, g, b, 1.0) * (1.0 - bnMask - bnMask2) + (whiteNoise + blockNoise + blockNoise2 - waveNoise);
           }
         ` }));
@@ -366,7 +366,7 @@ const init = () => {
   cameraBack.position.set(0, 0, 100);
   cameraBack.lookAt(new THREE.Vector3());
 
-  bgImg.init('http://www.tplh.net/file/osaka01.jpg', () => {
+  bgImg.init('https://www.tplh.net/file/osaka01.jpg', () => {
     sceneBack.add(bgImg.obj);
     scene.add(postEffect.obj);
   });
